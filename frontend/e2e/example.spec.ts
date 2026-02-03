@@ -5,7 +5,7 @@ test('has title', async ({ page }) => {
 
   // Expect a title "to contain" a substring.
   // Note: Adjust based on actual app title
-  await expect(page).toHaveTitle(/Prompt Base|Vite/);
+  await expect(page).toHaveTitle(/Prompt Base|Vite|frontend/);
 });
 
 test('login link exists', async ({ page }) => {

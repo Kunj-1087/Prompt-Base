@@ -386,9 +386,10 @@ export const verifyEmail = async (req: Request, res: Response) => {
 };
 
 export const resendVerification = async (req: Request, res: Response) => {
-    if (!req.user) throw new AppError('Not authorized', 401);
+    const userReq = req as any;
+    if (!userReq.user) throw new AppError('Not authorized', 401);
 
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(userReq.user.id);
     if (!user) throw new AppError('User not found', 404);
 
     if (user.emailVerified) {
