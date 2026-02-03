@@ -2,14 +2,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 
 // Load .env file
-const envPath = path.resolve(__dirname, '../../.env');
-const result = dotenv.config({ path: envPath });
-console.log('Environment path:', envPath);
-if (result.error) {
-  console.error('Dotenv error:', result.error);
-} else {
-  console.log('Dotenv loaded successfully');
-}
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 interface Config {
   NODE_ENV: string;
