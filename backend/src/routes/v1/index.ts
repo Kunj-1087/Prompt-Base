@@ -9,6 +9,8 @@ import twoFactorRoutes from './twoFactor.routes';
 import sessionRoutes from './session.routes';
 import promptRoutes from './prompt.routes';
 import activityRoutes from './activity.routes';
+import analyticsRoutes from './analytics.routes';
+import feedbackRoutes from './feedback.routes';
 
 const router = Router();
 
@@ -22,6 +24,8 @@ router.use('/2fa', twoFactorRoutes);
 router.use('/sessions', sessionRoutes);
 router.use('/prompts', promptRoutes);
 router.use('/activity', activityRoutes);
+router.use('/analytics', analyticsRoutes);
+router.use('/feedback', feedbackRoutes);
 // router.use('/upload', uploadRoutes);
 
 export default router;

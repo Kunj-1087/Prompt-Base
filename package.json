@@ -1,0 +1,41 @@
+{
+  "name": "p-b",
+  "version": "1.0.0",
+  "description": "Developer-focused web tool for refining prompts.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kunj-1087/Prompt-Base.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kunj-1087/Prompt-Base/issues"
+  },
+  "homepage": "https://github.com/Kunj-1087/Prompt-Base#readme",
+  "devDependencies": {
+    "husky": "^8.0.0",
+    "lint-staged": "^16.2.7"
+  },
+  "lint-staged": {
+    "backend/**/*.{js,ts}": [
+      "eslint --fix --config backend/eslint.config.js",
+      "prettier --write --config backend/.prettierrc"
+    ],
+    "frontend/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix --config frontend/eslint.config.js",
+      "prettier --write --config frontend/.prettierrc"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  }
+}
