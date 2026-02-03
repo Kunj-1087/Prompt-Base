@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { promptService } from '../services/promptService';
-import { Button } from '../components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { PromptForm, type PromptFormValues } from '../components/prompts/PromptForm';

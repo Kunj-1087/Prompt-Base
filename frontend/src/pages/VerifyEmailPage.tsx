@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
-import { Button } from '../components/ui/Button';
+import { Button } from '../components/ui/button';
 import { CheckCircle, XCircle, Loader2, ArrowRight } from 'lucide-react';
-import { Card } from '../components/ui/Card';
+import { Card } from '../components/ui/card';
 
 export const VerifyEmailPage = () => {
   const { token } = useParams<{ token: string }>();

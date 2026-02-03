@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { promptService, type IPrompt } from '../services/promptService';
-import { Button } from '../components/ui/Button';
+import { Button } from '../components/ui/button';
 import { DeleteConfirmModal } from '../components/ui/DeleteConfirmModal';
 import { ArrowLeft, Edit, Trash2, Calendar, Tag, AlertTriangle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { SEO } from '../components/common/SEO';
+import { useSocket } from '../context/SocketContext';
+import { useAuth } from '../context/AuthContext';
+import { OnlineUsers } from '../components/collaboration/OnlineUsers';
 
 export const PromptDetailPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -14,6 +18,48 @@ export const PromptDetailPage = () => {
     const [error, setError] = useState('');
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    
+    // Socket & Auth
+    const { socket, isConnected } = useSocket();
+    const { user } = useAuth();
+    const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (!socket || !isConnected || !id || !user) return;
+
+        // Join room
+        socket.emit('join_room', { 
+            promptId: id, 
+            user: { id: user.id || (user as any)._id, name: user.name, avatar: (user as any).avatar } 
+        });
+
+        const handleUsersOnline = (users: any[]) => {
+            setOnlineUsers(users);
+        };
+
+        const handleUserJoined = (newUser: any) => {
+             setOnlineUsers(prev => {
+                 if (prev.find(u => u.id === newUser.id)) return prev;
+                 return [...prev, newUser];
+             });
+             toast.success(`${newUser.name} joined`);
+        };
+
+        const handleUserLeft = (userId: string) => {
+            setOnlineUsers(prev => prev.filter(u => u.id !== userId));
+        };
+
+        socket.on('users_online', handleUsersOnline);
+        socket.on('user_joined', handleUserJoined);
+        socket.on('user_left', handleUserLeft);
+
+        return () => {
+            socket.emit('leave_room', id);
+            socket.off('users_online', handleUsersOnline);
+            socket.off('user_joined', handleUserJoined);
+            socket.off('user_left', handleUserLeft);
+        };
+    }, [socket, isConnected, id, user]);
 
     useEffect(() => {
         const fetchPrompt = async () => {
@@ -78,8 +124,16 @@ export const PromptDetailPage = () => {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-slate-950 pt-24 px-4 flex justify-center">
-                <div className="text-indigo-400 animate-pulse">Loading details...</div>
+            <div className="min-h-screen pt-24 pb-12 bg-slate-950 px-4">
+               <div className="container mx-auto max-w-4xl">
+                   {/* SEO component is typically placed at the top level, not inside a loading state,
+                       and requires prompt data which is not available yet.
+                       The existing SEO component below is correctly placed. */}
+                   <div className="animate-pulse space-y-8">
+                       <div className="h-8 bg-slate-800 rounded w-1/3"></div>
+                       <div className="h-64 bg-slate-900 rounded-xl border border-slate-800"></div>
+                   </div>
+               </div>
             </div>
         );
     }
@@ -102,8 +156,9 @@ export const PromptDetailPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-slate-950 pt-24 pb-12 px-4">
-            <div className="container mx-auto max-w-4xl">
+        <div className="min-h-screen pt-24 pb-12 bg-slate-950 px-4">
+            <SEO title={`${prompt.title} | Prompt-Base`} description={prompt.description} />
+            <div className="container mx-auto max-w-5xl">
                 {/* Header Actions */}
                 <div className="flex items-center justify-between mb-8">
                     <Button 
@@ -137,6 +192,9 @@ export const PromptDetailPage = () => {
 
                 {/* Main Content */}
                 <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-8 shadow-xl">
+                    <div className="mb-4 flex justify-end">
+                       <OnlineUsers users={onlineUsers} />
+                    </div>
                     <div className="flex flex-wrap items-center gap-3 mb-6">
                          <span className={`px-3 py-1 rounded-full text-sm font-medium border uppercase tracking-wider ${
                             prompt.status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' :

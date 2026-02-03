@@ -6,13 +6,16 @@ import { TwoFactorSettings } from '../components/settings/TwoFactorSettings';
 import { ActiveSessions } from '../components/settings/ActiveSessions';
 import { NotificationSettings } from '../components/settings/NotificationSettings';
 import { AccountManagement } from '../components/settings/AccountManagement';
-import { User, Lock, Bell, Settings as SettingsIcon } from 'lucide-react';
+import { ThemeSettings } from '../components/settings/ThemeSettings';
+import { LanguageSelector } from '../components/common/LanguageSelector';
+import { User, Lock, Bell, Settings as SettingsIcon, Palette } from 'lucide-react';
 
 export const SettingsPage = () => {
   const [currentTab, setCurrentTab] = useState('profile');
 
   const tabs = [
     { id: 'profile', label: 'Profile Settings', icon: User },
+    { id: 'appearance', label: 'Appearance', icon: Palette },
     { id: 'security', label: 'Security', icon: Lock },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'account', label: 'Account Management', icon: SettingsIcon },
@@ -26,6 +29,18 @@ export const SettingsPage = () => {
 
         <SettingsLayout currentTab={currentTab} onTabChange={setCurrentTab} tabs={tabs}>
             {currentTab === 'profile' && <ProfileSettings />}
+            {currentTab === 'appearance' && (
+                <div className="space-y-8">
+                     <ThemeSettings />
+                     <div className="border-t border-slate-800 pt-8">
+                         <h3 className="text-lg font-medium text-white mb-4">Language</h3>
+                         <div className="flex items-center gap-4">
+                            <span className="text-slate-400 text-sm">Select your preferred language:</span>
+                            <LanguageSelector />
+                         </div>
+                     </div>
+                </div>
+            )}
             {currentTab === 'security' && (
                 <div className="space-y-12">
                      <SecuritySettings />

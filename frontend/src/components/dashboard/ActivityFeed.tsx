@@ -1,48 +1,87 @@
-import type { ActivityLog } from '../../services/dashboardService';
-import { Card } from '../ui/Card';
-import { Clock, Activity } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { activityService, type Activity } from '../../services/activityService';
+import { ActivityItem } from './ActivityItem';
+import { useSocket } from '../../context/SocketContext';
+import { Button } from '../ui/button';
 
 interface ActivityFeedProps {
-  activities: ActivityLog[];
+    initialActivities?: Activity[];
 }
 
-export const ActivityFeed: React.FC<ActivityFeedProps> = ({ activities }) => {
-  if (activities.length === 0) {
-    return (
-        <Card className="bg-slate-900/50 backdrop-blur border-slate-800 p-8 text-center">
-            <Activity className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-            <h3 className="text-slate-300 font-medium">No recent activity</h3>
-            <p className="text-slate-500 text-sm">Your actions will appear here once you start using the app.</p>
-        </Card>
-    );
-  }
+export const ActivityFeed: React.FC<ActivityFeedProps> = ({ initialActivities = [] }) => {
+    const [activities, setActivities] = useState<Activity[]>(initialActivities);
+    const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const { socket } = useSocket();
 
-  return (
-    <Card className="bg-slate-900/50 backdrop-blur border-slate-800 p-6">
-      <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-          <Clock className="w-5 h-5 mr-2 text-indigo-400" />
-          Recent Activity
-      </h3>
-      <div className="space-y-6">
-        {activities.map((activity) => (
-          <div key={activity._id} className="relative pl-6 border-l-2 border-slate-800 last:border-0 pb-1">
-             <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-900 border-2 border-indigo-500/50"></div>
-             <div className="flex justify-between items-start">
-                <div>
-                     <p className="text-slate-200 font-medium">{activity.action}</p>
-                     {activity.metadata && (
-                         <p className="text-sm text-slate-500 mt-1">
-                             {JSON.stringify(activity.metadata)}
-                         </p>
-                     )}
-                </div>
-                <span className="text-xs text-slate-500 whitespace-nowrap ml-4">
-                    {new Date(activity.createdAt).toLocaleDateString()}
-                </span>
-             </div>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
+    useEffect(() => {
+        // If no initial activities or we want to ensure fresh data?
+        // Let's fetch if empty.
+        if (initialActivities.length === 0) {
+            loadActivities(1);
+        } else {
+            setActivities(initialActivities);
+        }
+    }, [initialActivities]);
+
+    useEffect(() => {
+        if (!socket) return;
+        
+        socket.on('new_activity', (newActivity: Activity) => {
+            setActivities(prev => [newActivity, ...prev]);
+        });
+
+        return () => {
+            socket.off('new_activity');
+        };
+    }, [socket]);
+
+    const loadActivities = async (pageNum: number) => {
+        setLoading(true);
+        try {
+            const data = await activityService.getActivities('team', pageNum);
+            if (pageNum === 1) {
+                setActivities(data);
+            } else {
+                setActivities(prev => [...prev, ...data]);
+            }
+            if (data.length < 20) setHasMore(false);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleLoadMore = () => {
+        const nextPage = page + 1;
+        setPage(nextPage);
+        loadActivities(nextPage);
+    };
+
+    return (
+        <div className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">Activity Feed</h3>
+            <div className="space-y-4 mb-4">
+                {activities.length === 0 && !loading ? (
+                    <p className="text-slate-500 text-center py-4">No recent activity</p>
+                ) : (
+                    activities.map((activity) => (
+                        <ActivityItem key={activity._id} activity={activity} />
+                    ))
+                )}
+            </div>
+            {hasMore && (
+                <Button 
+                    variant="ghost" 
+                    className="w-full text-slate-400 hover:text-white"
+                    onClick={handleLoadMore}
+                    disabled={loading}
+                >
+                    {loading ? 'Loading...' : 'Load More'}
+                </Button>
+            )}
+        </div>
+    );
 };

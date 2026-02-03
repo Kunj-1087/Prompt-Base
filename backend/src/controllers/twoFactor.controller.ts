@@ -12,12 +12,12 @@ import crypto from 'crypto';
 export const setup2FA = async (req: Request, res: Response) => {
     if (!req.user) throw new AppError('Not authorized', 401);
 
-    const secret = speakeasy.generateSecret({
-        name: `Prompt-Base (${req.user.email})`
-    });
-
     const user = await User.findById(req.user.id);
     if (!user) throw new AppError('User not found', 404);
+
+    const secret = speakeasy.generateSecret({
+        name: `Prompt-Base (${user.email})`
+    });
 
     // Temporarily store secret (not enabled yet)
     user.twoFactorSecret = secret.base32;

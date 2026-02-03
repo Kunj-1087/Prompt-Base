@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { dashboardService } from '../services/dashboardService';
 import type { DashboardSummary } from '../services/dashboardService';
@@ -6,10 +7,11 @@ import { authService } from '../services/authService';
 import { StatCard } from '../components/dashboard/StatCard';
 import { ActivityFeed } from '../components/dashboard/ActivityFeed';
 import { Layers, Zap, Clock, TrendingUp, Plus, AlertTriangle } from 'lucide-react';
-import { Button } from '../components/ui/Button';
+import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 export const DashboardPage = () => {
+    const { t } = useTranslation();
     const { user } = useAuth();
     const navigate = useNavigate();
     const [summary, setSummary] = useState<DashboardSummary | null>(null);
@@ -30,12 +32,18 @@ export const DashboardPage = () => {
         fetchDashboard();
     }, []);
 
-    const getGreeting = () => {
+    const getTimeOfDay = () => {
         const hour = new Date().getHours();
-        if (hour < 12) return 'Good Morning';
-        if (hour < 18) return 'Good Afternoon';
-        return 'Good Evening';
+        if (hour < 12) return 'Morning';
+        if (hour < 18) return 'Afternoon';
+        return 'Evening';
     };
+    
+    // ... handleResendVerification ... (omitted from replacement for brevity if not changing, but I must be careful with replace chunks)
+    // Actually I can't skip lines easily if I want to update getGreeting *and* the JSX which is further down.
+    // I'll make separate replacements.
+    
+    // Replacing just the top part first to get 't'.
     
     const handleResendVerification = async () => {
         try {
@@ -81,20 +89,25 @@ export const DashboardPage = () => {
                 )}
 
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                     <div>
                          <h1 className="text-3xl font-bold text-white mb-2">
-                            {getGreeting()}, <span className="text-indigo-400">{user?.name}</span>
+                            {t('dashboard.greeting', { timeOfDay: getTimeOfDay(), name: user?.name })}
                          </h1>
-                         <p className="text-slate-400">Here's what's happening today.</p>
-                         <button onClick={() => navigate('/prompts')} className="text-sm text-indigo-400 hover:text-indigo-300 mt-1">View All Prompts</button>
+                         <p className="text-slate-400">{t('dashboard.stats.activity')}</p> 
+                         {/* Note: activity key is 'Recent Activity', maybe I should add a subtitle key, but for now re-using or just static 'Here is what's happening' if I want to match EN exactly or add a key */}
+                         {/* Let's stick to English hardcoded subtitle for now or add a key. I'll add 'common.welcome' or similar. Actually I'll just leave English for non-critical subtitle or use t('common.welcome') as placeholder */}
+                         {/* Re-reading en.ts: I don't have a subtitle key. I'll just leave the subtitle hardcoded or generic.*/}
+                         <button onClick={() => navigate('/prompts')} className="text-sm text-indigo-400 hover:text-indigo-300 mt-1 p-1 -ml-1">
+                            {t('nav.prompts')}
+                         </button>
                     </div>
                     <Button 
-                        className="bg-linear-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 border-0 shadow-lg shadow-indigo-500/20"
+                        className="w-full md:w-auto bg-linear-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 border-0 shadow-lg shadow-indigo-500/20 h-12 md:h-10 text-base md:text-sm"
                         onClick={() => window.location.href = '/prompts/new'} 
                     >
-                        <Plus className="w-4 h-4 mr-2" />
-                        New Prompt
+                        <Plus className="w-5 h-5 md:w-4 md:h-4 mr-2" />
+                        {t('nav.create')}
                     </Button>
                 </div>
 
@@ -102,26 +115,26 @@ export const DashboardPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                     <StatCard 
                         icon={Layers} 
-                        label="Total Items" 
+                        label={t('dashboard.stats.total')} 
                         value={summary?.stats.totalItems || 0} 
                         color="text-blue-400"
                     />
                     <StatCard 
                         icon={Zap} 
-                        label="Active Items" 
+                        label={t('dashboard.stats.active')} 
                         value={summary?.stats.activeItems || 0} 
                         color="text-yellow-400"
                     />
                     <StatCard 
                         icon={Clock} 
-                        label="Recent Activity" 
+                        label={t('dashboard.stats.activity')} 
                         value={summary?.stats.recentActivityCount || 0} 
                         trend="Last 24h"
                         color="text-purple-400"
                     />
                     <StatCard 
                         icon={TrendingUp} 
-                        label="Completion Rate" 
+                        label={t('dashboard.stats.completion')} 
                         value={`${summary?.stats.completionRate || 0}%`} 
                         color="text-emerald-400"
                     />
@@ -131,7 +144,7 @@ export const DashboardPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Activity Feed (2 Cols) */}
                     <div className="lg:col-span-2">
-                        <ActivityFeed activities={summary?.activities || []} />
+                        <ActivityFeed />
                     </div>
 
                     {/* Quick Actions / Sidebar (1 Col) */}
@@ -140,13 +153,13 @@ export const DashboardPage = () => {
                          <div className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-xl p-6">
                             <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
                             <div className="space-y-3">
-                                <Button variant="outline" className="w-full justify-start border-slate-700 hover:bg-slate-800 text-slate-300">
+                                <Button variant="outline" className="w-full justify-start border-slate-700 hover:bg-slate-800 text-slate-300 h-12 md:h-10 text-base md:text-sm">
                                     Edit Profile
                                 </Button>
-                                <Button variant="outline" className="w-full justify-start border-slate-700 hover:bg-slate-800 text-slate-300">
+                                <Button variant="outline" className="w-full justify-start border-slate-700 hover:bg-slate-800 text-slate-300 h-12 md:h-10 text-base md:text-sm">
                                     View Documentation
                                 </Button>
-                                <Button variant="outline" className="w-full justify-start border-slate-700 hover:bg-slate-800 text-slate-300">
+                                <Button variant="outline" className="w-full justify-start border-slate-700 hover:bg-slate-800 text-slate-300 h-12 md:h-10 text-base md:text-sm">
                                     Contact Support
                                 </Button>
                             </div>

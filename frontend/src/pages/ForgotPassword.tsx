@@ -4,9 +4,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { ArrowLeft, Check, X } from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import api from '../services/api';
 
 const forgotPasswordSchema = z.object({

@@ -1,75 +1,117 @@
-import config from '../config/env';
 
-/**
- * Service to handle email sending.
- * Currently logs to console over implementing an actual provider (SendGrid/Resend) for development speed.
- */
-export const sendVerificationEmail = async (email: string, token: string, name: string) => {
-  const verificationUrl = `${config.CORS_ORIGIN}/verify-email?token=${token}`;
-  
-  // In a real app, you would use a template engine and an email provider here.
-  const emailContent = `
-    Hi ${name},
-    
-    Welcome to Prompt-Base! Please verify your email address by clicking the link below:
-    
-    ${verificationUrl}
-    
-    This link will expire in 24 hours.
-    
-    Best,
-    The Prompt-Base Team
-  `;
+import nodemailer from 'nodemailer';
+import handlebars from 'handlebars';
+import { emailTemplates } from '../templates/emailTemplates';
 
-  if (config.NODE_ENV !== 'test') {
-    console.log(`
-    ==================================================
-    📧 [MOCK EMAIL SERVICE] Sending to: ${email}
-    Subject: Verify your email
-    ${emailContent}
-    ==================================================
-    `);
+interface EmailOptions {
+  to: string;
+  subject: string;
+  template: keyof typeof emailTemplates;
+  context: Record<string, any>;
+}
+
+export class EmailService {
+  private transporter;
+
+  constructor() {
+    this.transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT) || 587,
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
   }
-  
-  return true;
-};
 
-export const sendPasswordResetEmail = async (email: string, token: string) => {
-  const resetUrl = `${config.CORS_ORIGIN}/reset-password?token=${token}`;
-  
-  const emailContent = `
-    You requested a password reset. Please click the link below to reset your password:
-    
-    ${resetUrl}
-    
-    This link will expire in 1 hour.
-    
-    If you did not request this, please ignore this email.
-  `;
+  private async sendEmail({ to, subject, template, context }: EmailOptions) {
+    const templateData = emailTemplates[template];
+    if (!templateData) {
+      throw new Error(`Email template '${template}' not found`);
+    }
 
-  if (config.NODE_ENV !== 'test') {
-    console.log(`
-    ==================================================
-    📧 [MOCK EMAIL SERVICE] Sending to: ${email}
-    Subject: Password Reset Request
-    ${emailContent}
-    ==================================================
-    `);
+    const htmlCompiler = handlebars.compile(templateData.html);
+    const textCompiler = handlebars.compile(templateData.text);
+
+    const html = htmlCompiler(context);
+    const text = textCompiler(context);
+
+    try {
+      const info = await this.transporter.sendMail({
+        from: process.env.FROM_EMAIL,
+        to,
+        subject,
+        html,
+        text,
+      });
+      console.log('Message sent: %s', info.messageId);
+      return info;
+    } catch (error) {
+      console.error('Error sending email:', error);
+      throw error;
+    }
   }
-  
-  return true;
-};
 
-export const sendPasswordResetSuccessEmail = async (email: string) => {
-  if (config.NODE_ENV !== 'test') {
-    console.log(`
-    ==================================================
-    📧 [MOCK EMAIL SERVICE] Sending to: ${email}
-    Subject: Password Reset Successful
-    
-    Your password has been successfully reset.
-    ==================================================
-    `);
+  async sendWelcomeEmail(to: string, name: string) {
+    return this.sendEmail({
+      to,
+      subject: emailTemplates.welcome.subject,
+      template: 'welcome',
+      context: { 
+        name, 
+        ctaLink: `${process.env.FRONTEND_URL}/dashboard` 
+      },
+    });
   }
-  return true;
-};
+
+  async sendVerificationEmail(to: string, token: string) {
+    return this.sendEmail({
+      to,
+      subject: emailTemplates.verification.subject,
+      template: 'verification',
+      context: { 
+        verificationLink: `${process.env.FRONTEND_URL}/verify-email?token=${token}` 
+      },
+    });
+  }
+
+  async sendPasswordResetEmail(to: string, resetLink: string) {
+    return this.sendEmail({
+      to,
+      subject: emailTemplates.resetPassword.subject,
+      template: 'resetPassword',
+      context: { resetLink },
+    });
+  }
+
+  async sendNotificationEmail(to: string, message: string, actionLink: string) {
+    return this.sendEmail({
+      to,
+      subject: emailTemplates.notification.subject,
+      template: 'notification',
+      context: { message, actionLink },
+    });
+  }
+
+  async sendPasswordResetSuccessEmail(to: string) {
+      // Intentionally simple or using notification template if specific one missing
+      // Or we can assume 'resetSuccess' logic or just skip context
+      // For now, let's use a generic notification or assume template exists
+      // But verify template exists? 'emailTemplates' import.
+      // Let's check templates/emailTemplates usage
+      // I'll assume we used notification or create a new one.
+      // Safest: Use notification template for now as fallback
+      return this.sendEmail({
+          to,
+          subject: 'Password Reset Successful',
+          template: 'notification', // reusing notification as fallback
+          context: { 
+              message: 'Your password has been successfully reset.',
+              actionLink: `${process.env.FRONTEND_URL}/login`
+          }
+      });
+  }
+}
+
+export const emailService = new EmailService();

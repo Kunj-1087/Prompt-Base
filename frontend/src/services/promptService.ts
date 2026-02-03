@@ -12,95 +12,88 @@ export interface IPrompt {
     updatedAt: string;
 }
 
-export interface CreatePromptData {
-    title: string;
-    description?: string;
-    status?: 'draft' | 'active' | 'completed' | 'archived';
-    priority?: 'low' | 'medium' | 'high';
-    tags?: string[];
-    metadata?: Record<string, any>;
+export interface PromptFilters {
+  status?: string[];
+  priority?: string[];
+  tags?: string[];
+  date?: {
+      start?: string;
+      end?: string;
+  };
 }
 
-export interface UpdatePromptData {
-    title?: string;
-    description?: string;
-    status?: 'draft' | 'active' | 'completed' | 'archived';
-    priority?: 'low' | 'medium' | 'high';
-    tags?: string[];
-    metadata?: Record<string, any>;
+export interface SearchResults {
+  data: any[];
+  meta: {
+      facets: {
+          status: { label: string; count: number }[];
+          priority: { label: string; count: number }[];
+          tags: { label: string; count: number }[];
+      };
+  };
+  pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+      hasNext: boolean;
+      hasPrev: boolean;
+  };
 }
 
-export interface PaginationMeta {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-}
+export const searchPromptsAdvanced = async (query: string, filters: PromptFilters, page = 1, limit = 20): Promise<SearchResults> => {
+  const params: any = { q: query, page, limit };
+  
+  if (filters.status?.length) params['filter[status]'] = filters.status.join(',');
+  if (filters.priority?.length) params['filter[priority]'] = filters.priority.join(',');
+  if (filters.tags?.length) params['filter[tags]'] = filters.tags.join(',');
+  
+  const { data } = await api.get('/prompts/search', { params });
+  return data.data || data; 
+};
 
-export interface GetPromptsResponse {
-    data: IPrompt[];
-    pagination: PaginationMeta;
-}
+export const getSearchSuggestions = async (query: string): Promise<string[]> => {
+    const { data } = await api.get('/prompts/suggestions', { params: { q: query } });
+    return data.data; 
+};
+
+export const getPrompts = async (params: any) => {
+    const { data } = await api.get('/prompts', { params });
+    return data;
+};
+
+export const getPromptById = async (id: string) => {
+    const { data } = await api.get(`/prompts/${id}`);
+    return data.data || data; // Handle wrapper
+};
+
+export const createPrompt = async (promptData: any) => {
+    const { data } = await api.post('/prompts', promptData);
+    return data;
+};
+
+export const updatePrompt = async (id: string, promptData: any) => {
+    const { data } = await api.patch(`/prompts/${id}`, promptData);
+    return data;
+};
+
+export const deletePrompt = async (id: string) => {
+    const { data } = await api.delete(`/prompts/${id}`);
+    return data;
+};
+
+export const restorePrompt = async (id: string) => {
+    const { data } = await api.post(`/prompts/${id}/restore`);
+    return data;
+};
 
 export const promptService = {
-  getPrompts: async (params?: { 
-      status?: string; 
-      priority?: string; 
-      search?: string; 
-      page?: number; 
-      limit?: number; 
-      sort?: string;
-      order?: string;
-  }) => {
-    const queryParams = new URLSearchParams();
-    if (params?.status) queryParams.append('status', params.status);
-    if (params?.priority) queryParams.append('priority', params.priority);
-    if (params?.search) queryParams.append('search', params.search);
-    if (params?.page) queryParams.append('page', params.page.toString());
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.sort) queryParams.append('sort', params.sort);
-    if (params?.order) queryParams.append('order', params.order);
-
-    const response = await api.get(`/prompts?${queryParams.toString()}`);
-    // Backend wraps response in { success: true, message: "...", data: { data: [...], pagination: {...} } }
-    // Ideally we return the inner data object
-    return response.data.data as GetPromptsResponse;
-  },
-
-  getPromptById: async (id: string) => {
-    const response = await api.get(`/prompts/${id}`);
-    return response.data.data as IPrompt;
-  },
-
-  createPrompt: async (data: CreatePromptData) => {
-    const response = await api.post('/prompts', data);
-    return response.data;
-  },
-
-  updatePrompt: async (id: string, data: UpdatePromptData) => {
-    const response = await api.patch(`/prompts/${id}`, data);
-    return response.data;
-  },
-
-  deletePrompt: async (id: string) => {
-    const response = await api.delete(`/prompts/${id}`);
-    return response.data;
-  },
-
-  restorePrompt: async (id: string) => {
-    const response = await api.post(`/prompts/${id}/restore`);
-    return response.data;
-  },
-
-  searchPrompts: async (params: { q: string; page?: number; limit?: number; status?: string; priority?: string; sort?: string; order?: string }) => {
-    const response = await api.get('/prompts/search', { params });
-    return response.data;
-  },
-
-  getSuggestions: async (q: string) => {
-    const response = await api.get('/prompts/suggestions', { params: { q } });
-    return response.data;
-  }
+    getPrompts,
+    getPromptById,
+    createPrompt,
+    updatePrompt,
+    deletePrompt,
+    restorePrompt,
+    searchPromptsAdvanced,
+    getSearchSuggestions
 };

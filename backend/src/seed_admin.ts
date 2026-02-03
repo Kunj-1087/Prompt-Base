@@ -7,7 +7,7 @@ dotenv.config();
 
 const seedAdmin = async () => {
   try {
-    await mongoose.connect(config.MONGO_URI || process.env.DATABASE_URL as string);
+    await mongoose.connect(config.DATABASE_URL || process.env.DATABASE_URL as string);
     console.log('MongoDB Connected');
 
     const adminEmail = 'admin@example.com';

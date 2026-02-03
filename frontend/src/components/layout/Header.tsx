@@ -1,12 +1,20 @@
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Button } from "../ui/Button";
-import { Terminal, User, LogOut, ShieldCheck } from "lucide-react";
+import { Button } from "../ui/button";
+import { Terminal, User, LogOut, ShieldCheck, Menu, X } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { ThemeToggle } from "./ThemeToggle";
 
 export const Header = () => {
   const location = useLocation();
   const { isAuthenticated, logout, user } = useAuth();
   const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md">
@@ -17,47 +25,115 @@ export const Header = () => {
         </Link>
         
         {!isAuthPage && (
-          <nav className="flex items-center space-x-4">
-            {isAuthenticated ? (
-              <>
-                {user?.role === 'admin' && (
-                  <Link to="/admin">
-                    <Button variant="ghost" size="sm" className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10">
-                      <ShieldCheck className="w-4 h-4 mr-2" />
-                      Admin
+          <>
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center space-x-4">
+              {isAuthenticated ? (
+                <>
+                  {user?.role === 'admin' && (
+                    <Link to="/admin">
+                      <Button variant="ghost" size="sm" className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10">
+                        <ShieldCheck className="w-4 h-4 mr-2" />
+                        Admin
+                      </Button>
+                    </Link>
+                  )}
+                  <Link to="/dashboard">
+                    <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white">
+                      <Terminal className="w-4 h-4 mr-2" />
+                      Dashboard
                     </Button>
                   </Link>
-                )}
-                <Link to="/dashboard">
-                  <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white">
-                    <Terminal className="w-4 h-4 mr-2" />
-                    Dashboard
+                  <Link to="/profile">
+                    <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white">
+                      <User className="w-4 h-4 mr-2" />
+                      {user?.name || 'Profile'}
+                    </Button>
+                  </Link>
+                  <Button variant="ghost" size="sm" onClick={logout} className="text-slate-300 hover:text-white">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
                   </Button>
-                </Link>
-                <Link to="/profile">
-                  <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white">
-                    <User className="w-4 h-4 mr-2" />
-                    {user?.name || 'Profile'}
-                  </Button>
-                </Link>
-                <Button variant="ghost" size="sm" onClick={logout} className="text-slate-300 hover:text-white">
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <>
-                <Link to="/login">
-                  <Button variant="ghost" size="sm">Log In</Button>
-                </Link>
-                <Link to="/signup">
-                  <Button size="sm">Sign Up</Button>
-                </Link>
-              </>
-            )}
-          </nav>
+                </>
+              ) : (
+                <>
+                  <Link to="/login">
+                    <Button variant="ghost" size="sm">Log In</Button>
+                  </Link>
+                  <Link to="/signup">
+                    <Button size="sm">Sign Up</Button>
+                  </Link>
+                </>
+              )}
+              
+              <div className="ml-2">
+                <ThemeToggle />
+              </div>
+            </nav>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="text-slate-300 hover:text-white"
+              >
+                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </Button>
+            </div>
+          </>
         )}
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && !isAuthPage && (
+        <div className="md:hidden border-t border-slate-800 bg-slate-950/95 backdrop-blur-xl absolute left-0 right-0 top-16 min-h-[calc(100vh-4rem)] p-4 animate-in slide-in-from-top-2">
+          <nav className="flex flex-col space-y-4">
+             {isAuthenticated ? (
+                <>
+                  {user?.role === 'admin' && (
+                    <Link to="/admin" className="p-2">
+                       <Button variant="ghost" className="w-full justify-start text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 h-10">
+                        <ShieldCheck className="w-5 h-5 mr-3" />
+                         Admin Dashboard
+                      </Button>
+                    </Link>
+                  )}
+                  <Link to="/dashboard" className="p-2">
+                     <Button variant="ghost" className="w-full justify-start text-slate-300 hover:text-white h-10">
+                      <Terminal className="w-5 h-5 mr-3" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Link to="/profile" className="p-2">
+                     <Button variant="ghost" className="w-full justify-start text-slate-300 hover:text-white h-10">
+                      <User className="w-5 h-5 mr-3" />
+                      My Profile
+                    </Button>
+                  </Link>
+                  <Button variant="ghost" onClick={logout} className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/10 h-10 p-2">
+                    <LogOut className="w-5 h-5 mr-3" />
+                    LogOut
+                  </Button>
+                  <div className="pt-4 border-t border-slate-800 flex justify-between items-center px-2">
+                     <span className="text-slate-400">Theme</span>
+                     <ThemeToggle />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className="p-2">
+                    <Button variant="ghost" className="w-full h-12 text-lg">Log In</Button>
+                  </Link>
+                  <Link to="/signup" className="p-2">
+                    <Button className="w-full h-12 text-lg">Sign Up</Button>
+                  </Link>
+                </>
+              )}
+          </nav>
+        </div>
+      )}
     </header>
   );
 };

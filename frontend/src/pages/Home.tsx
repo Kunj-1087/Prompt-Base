@@ -1,11 +1,17 @@
-import { Button } from "../components/ui/Button";
+import { Button } from "../components/ui/button";
 import { MainLayout } from "../components/layout/MainLayout";
 import { Link } from "react-router-dom";
 import { Sparkles, Zap, Shield } from "lucide-react";
 
+import { SEO } from "../components/common/SEO";
+
 export const Home = () => {
   return (
     <MainLayout>
+      <SEO 
+        title="Prompt-Base | AI Prompt Generator" 
+        description="Generate professional-grade AI prompts for ChatGPT, Claude, and Gemini in seconds."
+      />
       <div className="flex flex-col items-center justify-center space-y-12 text-center pt-10">
         <div className="space-y-6 max-w-3xl">
           <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-cyan-400 animate-fade-in-up">

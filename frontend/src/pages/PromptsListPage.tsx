@@ -3,10 +3,12 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { promptService, type IPrompt, type PaginationMeta } from '../services/promptService';
 import { PromptCard } from '../components/prompts/PromptCard';
 import { Pagination } from '../components/ui/Pagination';
-import { Button } from '../components/ui/Button';
-import { Plus, Search, Filter, RefreshCw, X, History } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Plus, Search, RefreshCw, X, History, AlertCircle, SearchX, FilePlus } from 'lucide-react';
 import { useDebounce } from '../hooks/useDebounce';
 import { HighlightText } from '../components/ui/HighlightText';
+import { EmptyState } from '../components/common/EmptyState';
+import { SEO } from '../components/common/SEO';
 
 export const PromptsListPage = () => {
     const navigate = useNavigate();
@@ -25,6 +27,7 @@ export const PromptsListPage = () => {
     const [prompts, setPrompts] = useState<IPrompt[]>([]);
     const [meta, setMeta] = useState<PaginationMeta | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState(initialSearch);
     
     // Debounce Search
@@ -113,8 +116,10 @@ export const PromptsListPage = () => {
             
             setPrompts(res.data);
             setMeta(res.pagination);
+            setError(null);
         } catch (error) {
             console.error(error);
+            setError('Failed to load prompts. Please try again.');
         } finally {
             setIsLoading(false);
         }
@@ -141,6 +146,7 @@ export const PromptsListPage = () => {
     return (
         <div className="min-h-screen pt-24 pb-12 bg-slate-950 px-4" onClick={() => setShowRecent(false)}>
             <div className="container mx-auto">
+                <SEO title="My Prompts | Prompt-Base" />
                 {/* Header & Actions */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
@@ -158,13 +164,14 @@ export const PromptsListPage = () => {
 
                 {/* Filters & Search */}
                 <div className="flex flex-col gap-4 mb-8">
-                   <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1 relative z-10">
-                        <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isLoading ? 'text-indigo-500 animate-pulse' : 'text-slate-500'}`} />
+                    {/* Search Bar */}
+                   <div className="flex flex-col lg:flex-row gap-4">
+                    <div className="flex-1 relative z-10 w-full">
+                        <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${isLoading ? 'text-indigo-500 animate-pulse' : 'text-slate-500'}`} />
                         <input 
                             type="text" 
                             placeholder="Search prompts..." 
-                            className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-10 py-2 text-slate-200 focus:outline-none focus:border-indigo-500"
+                            className="w-full h-12 bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-10 hover:border-slate-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-slate-200"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             onFocus={() => setShowRecent(true)}
@@ -176,13 +183,13 @@ export const PromptsListPage = () => {
                                     setSearchTerm('');
                                     updateParams({ search: '', page: 1 });
                                 }}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-500 hover:text-white"
                             >
-                                <X className="w-4 h-4" />
+                                <X className="w-5 h-5" />
                             </button>
                         )}
                         
-                        {/* Search Dropdown */}
+                        {/* Search Dropdown - (Logic remains same, just ensuring z-index) */}
                         {showRecent && (
                             <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-20">
                                 {/* Recent Searches */}
@@ -194,7 +201,7 @@ export const PromptsListPage = () => {
                                         {recentSearches.map(term => (
                                             <button
                                                 key={term}
-                                                className="w-full text-left px-4 py-2 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors flex items-center justify-between group"
+                                                className="w-full text-left px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors flex items-center justify-between group text-sm"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     setSearchTerm(term);
@@ -217,7 +224,7 @@ export const PromptsListPage = () => {
                                         {suggestions.map(term => (
                                             <button
                                                 key={term}
-                                                className="w-full text-left px-4 py-2 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors flex items-center justify-between group"
+                                                className="w-full text-left px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors flex items-center justify-between group text-sm"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     setSearchTerm(term);
@@ -241,11 +248,12 @@ export const PromptsListPage = () => {
                         )}
                     </div>
                     
-                    <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0">
+                    {/* Filters - Stack on mobile, row on tablet+ */}
+                    <div className="flex flex-col sm:flex-row gap-2 overflow-x-auto pb-1 md:pb-0">
                         {/* Sort Controls */}
-                        <div className="flex bg-slate-900 border border-slate-700 rounded-lg p-1">
+                        <div className="flex bg-slate-900 border border-slate-700 rounded-lg h-12 items-center flex-1 sm:flex-none">
                             <select 
-                                className="bg-transparent text-slate-300 text-sm focus:outline-none px-2"
+                                className="bg-transparent text-slate-300 text-sm focus:outline-none px-3 w-full sm:w-auto h-full"
                                 value={sort}
                                 onChange={(e) => updateParams({ sort: e.target.value, page: 1 })}
                             >
@@ -257,16 +265,15 @@ export const PromptsListPage = () => {
                             </select>
                             <button
                                 onClick={() => updateParams({ order: order === 'asc' ? 'desc' : 'asc' })} 
-                                className="px-2 text-slate-400 hover:text-white border-l border-slate-700"
+                                className="px-3 h-full text-slate-400 hover:text-white border-l border-slate-700 hover:bg-slate-800 rounded-r-lg transition-colors"
                             >
                                 {order === 'asc' ? '↑' : '↓'}
                             </button>
                         </div>
 
-                        <div className="w-px h-8 bg-slate-800 mx-1 hidden md:block" />
-
+                        {/* Status Filter */}
                         <select 
-                            className={`bg-slate-900 border ${status ? 'border-indigo-500 text-indigo-400' : 'border-slate-700 text-slate-300'} rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500`}
+                            className={`h-12 bg-slate-900 border ${status ? 'border-indigo-500 text-indigo-400' : 'border-slate-700 text-slate-300'} rounded-lg px-4 focus:outline-none focus:border-indigo-500 flex-1 sm:flex-none`}
                             value={status}
                             onChange={(e) => updateParams({ status: e.target.value, page: 1 })}
                         >
@@ -277,8 +284,9 @@ export const PromptsListPage = () => {
                             <option value="archived">Archived</option>
                         </select>
 
+                        {/* Priority Filter */}
                         <select 
-                            className={`bg-slate-900 border ${priority ? 'border-indigo-500 text-indigo-400' : 'border-slate-700 text-slate-300'} rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500`}
+                            className={`h-12 bg-slate-900 border ${priority ? 'border-indigo-500 text-indigo-400' : 'border-slate-700 text-slate-300'} rounded-lg px-4 focus:outline-none focus:border-indigo-500 flex-1 sm:flex-none`}
                             value={priority}
                             onChange={(e) => updateParams({ priority: e.target.value, page: 1 })}
                         >
@@ -288,15 +296,18 @@ export const PromptsListPage = () => {
                             <option value="high">High</option>
                         </select>
                         
-                        {hasActiveFilters && (
-                             <Button variant="ghost" className="text-slate-400 hover:text-white px-2" onClick={clearFilters}>
-                                <X className="w-4 h-4 mr-1" /> Clear
-                            </Button>
-                        )}
+                        {/* Action Buttons */}
+                        <div className="flex gap-2">
+                             {hasActiveFilters && (
+                                 <Button variant="ghost" className="h-12 px-4 text-slate-400 hover:text-white bg-slate-900 border border-transparent hover:border-slate-700" onClick={clearFilters}>
+                                    <X className="w-5 h-5 mr-1" /> Clear
+                                </Button>
+                            )}
 
-                        <Button variant="outline" className="border-slate-700 text-slate-400 hover:text-white" onClick={() => fetchPrompts()}>
-                            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-                        </Button>
+                            <Button variant="outline" className="h-12 w-12 p-0 border-slate-700 text-slate-400 hover:text-white" onClick={() => fetchPrompts()}>
+                                <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+                            </Button>
+                        </div>
                     </div>
                    </div>
                 </div>
@@ -316,17 +327,42 @@ export const PromptsListPage = () => {
                             <div key={i} className="bg-slate-900/30 border border-slate-800 h-64 rounded-xl animate-pulse" />
                         ))}
                     </div>
+                ) : error ? (
+                    <EmptyState
+                        icon={AlertCircle}
+                        title="Something went wrong"
+                        description={error}
+                        action={
+                            <Button onClick={() => fetchPrompts()} variant="outline">
+                                Try Again
+                            </Button>
+                        }
+                    />
                 ) : prompts.length === 0 ? (
-                    <div className="text-center py-20 bg-slate-900/20 border border-slate-800 rounded-xl border-dashed">
-                        <div className="inline-flex p-4 rounded-full bg-slate-800 mb-4 text-slate-400">
-                            <Filter className="w-8 h-8" />
-                        </div>
-                        <h3 className="text-xl font-medium text-white mb-2">No prompts found</h3>
-                        <p className="text-slate-400 mb-6">Try adjusting your filters or create a new prompt.</p>
-                        <Button onClick={() => navigate('/prompts/new')} variant="secondary">
-                            Create First Prompt
-                        </Button>
-                    </div>
+                    searchTerm || hasActiveFilters ? (
+                        <EmptyState 
+                            icon={SearchX}
+                            title="No matching prompts found"
+                            description="Try adjusting your filters or search term to find what you're looking for."
+                            action={
+                                <Button onClick={clearFilters} variant="outline">
+                                    Clear Filters
+                                </Button>
+                            }
+                        />
+                    ) : (
+                         <EmptyState 
+                            icon={FilePlus}
+                            title="No prompts created yet"
+                            description="Create your first prompt to get started with your collection."
+                            action={
+                                <Button onClick={() => navigate('/prompts/new')} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Create First Prompt
+                                </Button>
+                            }
+                        />
+                    )
                 ) : (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

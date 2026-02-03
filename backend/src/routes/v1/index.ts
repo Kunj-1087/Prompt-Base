@@ -5,7 +5,10 @@ import userRoutes from './user.routes';
 import adminRoutes from './admin.routes';
 import dashboardRoutes from './dashboard.routes';
 import settingsRoutes from './settings.routes';
-// import uploadRoutes from './upload.routes';
+import twoFactorRoutes from './twoFactor.routes';
+import sessionRoutes from './session.routes';
+import promptRoutes from './prompt.routes';
+import activityRoutes from './activity.routes';
 
 const router = Router();
 
@@ -18,6 +21,7 @@ router.use('/settings', settingsRoutes);
 router.use('/2fa', twoFactorRoutes);
 router.use('/sessions', sessionRoutes);
 router.use('/prompts', promptRoutes);
+router.use('/activity', activityRoutes);
 // router.use('/upload', uploadRoutes);
 
 export default router;

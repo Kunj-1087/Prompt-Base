@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Edit2, MapPin, Calendar, Globe, Github, Linkedin, Twitter, Mail } from 'lucide-react';
-import { Card } from '../components/ui/Card';
-import { Button } from '../components/ui/Button';
+import { Card } from '../components/ui/card';
+import { Button } from '../components/ui/button';
 import { AvatarUpload } from '../components/profile/AvatarUpload';
 import { EditProfileForm } from '../components/profile/EditProfileForm';
 import { userService } from '../services/userService';

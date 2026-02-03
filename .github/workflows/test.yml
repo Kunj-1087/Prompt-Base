@@ -1,0 +1,63 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Backend Dependencies
+        run: cd backend && npm ci
+
+      - name: Run Backend Tests
+        run: cd backend && npm test
+        env:
+          NODE_ENV: test
+          PORT: 5000
+          DATABASE_URL: mongodb://localhost:27017/prompt_base_test
+          JWT_SECRET: test_secret
+          JWT_REFRESH_SECRET: test_refresh
+          CORS_ORIGIN: http://localhost:5173
+          SMTP_HOST: localhost
+          SMTP_PORT: 587
+          SMTP_USER: user
+          SMTP_PASS: pass
+          FROM_EMAIL: test@example.com
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Frontend Dependencies
+        run: cd frontend && npm ci
+
+      - name: Run Frontend Tests
+        run: cd frontend && npm test
+
+      - name: Install Playwright Browsers
+        run: cd frontend && npx playwright install --with-deps
+
+      - name: Run E2E Tests
+        run: cd frontend && npx playwright test

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { protect } from '../middlewares/auth.middleware';
+import { protect } from '../../middlewares/auth.middleware';
 import {
   createPrompt,
   getPrompts,
@@ -9,8 +9,8 @@ import {
   restorePrompt,
   searchPrompts,
   getSuggestions
-} from '../controllers/prompt.controller';
-import { validate } from '../middlewares/validate.middleware';
+} from '../../controllers/prompt.controller';
+import { validate } from '../../middlewares/validate.middleware';
 import { z } from 'zod';
 
 const router = Router();
@@ -31,7 +31,7 @@ const createPromptSchema = z.object({
     tags: z.array(z.string(), {
         invalid_type_error: "Tags must be an array of strings"
     }).optional(),
-    metadata: z.record(z.any()).optional()
+    metadata: z.record(z.string(), z.any()).optional()
   }),
 });
 
@@ -42,7 +42,7 @@ const updatePromptSchema = z.object({
       status: z.enum(['draft', 'active', 'completed', 'archived']).optional(),
       priority: z.enum(['low', 'medium', 'high']).optional(),
       tags: z.array(z.string()).optional(),
-      metadata: z.record(z.any()).optional()
+      metadata: z.record(z.string(), z.any()).optional()
     }),
   });
 

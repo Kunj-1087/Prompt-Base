@@ -6,11 +6,11 @@ import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '.
 import { sendResponse } from '../utils/response';
 import { AppError } from '../utils/AppError';
 import speakeasy from 'speakeasy';
-import UAParser from 'ua-parser-js';
+import { UAParser } from 'ua-parser-js';
 import geoip from 'geoip-lite';
 
 import crypto from 'crypto';
-import { sendVerificationEmail, sendPasswordResetEmail, sendPasswordResetSuccessEmail } from '../services/email.service';
+import { emailService } from '../services/email.service';
 
 // Signup remains mostly same, but we should create a session if we auto-login (we don't active auto-login on signup here based on response)
 // Keeping signup as is for RefreshToken creation? NO.
@@ -47,13 +47,13 @@ export const signup = async (req: Request, res: Response) => {
 
   // Send verification email
   try {
-    await sendVerificationEmail(user.email, verificationToken, user.name);
+    await emailService.sendVerificationEmail(user.email, verificationToken);
   } catch (err) {
     console.error('Failed to send verification email:', err);
   }
 
   // PARSE DEVICE INFO
-  const ua = UAParser(req.headers['user-agent']);
+  const ua = new UAParser(req.headers['user-agent']).getResult();
   // const ip = req.ip || '127.0.0.1'; // Express req.ip can be trusted if trust proxy set
   // Get IP properly (if behind proxy, x-forwarded-for etc. Express req.ip handles if configured)
   const ip = req.ip || '127.0.0.1';
@@ -83,6 +83,24 @@ export const signup = async (req: Request, res: Response) => {
   });
 
   const accessToken = generateAccessToken(user._id, user.role, session._id);
+
+  // Set Cookies
+  const sameSiteOption: 'none' | 'lax' | 'strict' = process.env.NODE_ENV === 'production' ? 'none' : 'lax';
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: sameSiteOption
+  };
+
+  res.cookie('accessToken', accessToken, {
+      ...cookieOptions,
+      expires: new Date(Date.now() + 15 * 60 * 1000) // 15 min
+  });
+
+  res.cookie('refreshToken', refreshToken, {
+      ...cookieOptions,
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+  });
 
   sendResponse(res, 201, 'User created successfully. Please verify your email.', {
     user: {
@@ -156,7 +174,7 @@ export const login = async (req: Request, res: Response) => {
   await user.save();
 
   // PARSE DEVICE INFO
-  const ua = UAParser(req.headers['user-agent']);
+  const ua = new UAParser(req.headers['user-agent']).getResult();
   // Simplified IP handling
   let ip = req.ip || '127.0.0.1';
   if (ip === '::1') ip = '127.0.0.1';
@@ -181,12 +199,31 @@ export const login = async (req: Request, res: Response) => {
 
   const accessToken = generateAccessToken(user._id, user.role, session._id);
 
+  // Set Cookies
+  const sameSiteOption: 'none' | 'lax' | 'strict' = process.env.NODE_ENV === 'production' ? 'none' : 'lax';
+  const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: sameSiteOption
+  };
+  
+  res.cookie('accessToken', accessToken, {
+      ...cookieOptions,
+      expires: new Date(Date.now() + 15 * 60 * 1000)
+  });
+  
+  res.cookie('refreshToken', refreshToken, {
+      ...cookieOptions,
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+  });
+
   sendResponse(res, 200, 'Login successful', {
     user: {
       id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
+      emailVerified: true // Assuming active check passed
   },
     accessToken,
     refreshToken,
@@ -244,9 +281,6 @@ export const logout = async (req: Request, res: Response) => {
   sendResponse(res, 200, 'Logged out successfully');
 };
 
-  sendResponse(res, 200, 'Logged out successfully');
-};
-
 export const forgotPassword = async (req: Request, res: Response) => {
   const { email } = req.body;
 
@@ -270,7 +304,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
   await user.save({ validateBeforeSave: false });
 
   try {
-    await sendPasswordResetEmail(user.email, resetToken); // Send unhashed token
+    await emailService.sendPasswordResetEmail(user.email, resetToken); // Send unhashed token
     
     sendResponse(res, 200, 'If an account with that email exists, we have sent a password reset link.');
   } catch (err) {
@@ -314,12 +348,11 @@ export const resetPassword = async (req: Request, res: Response) => {
 
   // Send success email
   try {
-      await sendPasswordResetSuccessEmail(user.email);
+      await emailService.sendPasswordResetSuccessEmail(user.email); // Fixed call
   } catch (err) {
       console.error("Failed to send reset success email", err);
   }
 
-  sendResponse(res, 200, 'Password updated successfully! Please log in.');
   sendResponse(res, 200, 'Password updated successfully! Please log in.');
 };
 
@@ -378,7 +411,7 @@ export const resendVerification = async (req: Request, res: Response) => {
     await user.save();
 
     try {
-        await sendVerificationEmail(user.email, verificationToken, user.name);
+        await emailService.sendVerificationEmail(user.email, verificationToken);
     } catch (err) {
         user.verificationToken = undefined;
         user.verificationTokenExpires = undefined;
