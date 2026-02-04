@@ -56,7 +56,7 @@ export const EditPromptPage = () => {
         try {
             const formattedData = {
                 ...data,
-                tags: data.tags ? data.tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '') : []
+                tags: data.tags ? data.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag !== '') : []
             };
 
             await promptService.updatePrompt(id, formattedData);

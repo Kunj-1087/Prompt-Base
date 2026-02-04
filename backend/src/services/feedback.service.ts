@@ -1,5 +1,5 @@
 import { Feedback, IFeedback } from '../models/feedback.model';
-import emailService from './email.service';
+import { emailService } from './email.service';
 
 interface CreateFeedbackParams {
   userId?: string;
@@ -44,7 +44,7 @@ class FeedbackService {
     });
 
     // Notify admins of critical feedback
-    if (priority === 'critical' || params.type === 'bug') {
+    if (params.type === 'bug') {
       await this.notifyAdmins(feedback);
     }
 

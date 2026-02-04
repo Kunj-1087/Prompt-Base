@@ -49,7 +49,7 @@ export const PromptsListPage = () => {
             if (debouncedSearch && debouncedSearch.length >= 2) {
                 try {
                     const res = await promptService.getSuggestions(debouncedSearch);
-                    setSuggestions(res.data);
+                    setSuggestions(res);
                 } catch (err) {
                     console.error('Err fetching suggestions', err);
                 }

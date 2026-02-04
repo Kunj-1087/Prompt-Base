@@ -43,31 +43,5 @@ export const themes: Themes = {
         border: '#1e293b', // slate-800
         input: '#1e293b',
         ring: '#1d4ed8',
-    },
-    ocean: {
-        primary: '#06b6d4', // cyan-500
-        'primary-foreground': '#ffffff',
-        secondary: '#164e63', // cyan-900
-        'secondary-foreground': '#cffafe', // cyan-100
-        background: '#083344', // cyan-950
-        foreground: '#ecfeff', // cyan-50
-        card: '#155e75', // cyan-800
-        'card-foreground': '#ecfeff',
-        border: '#155e75',
-        input: '#155e75',
-        ring: '#06b6d4',
-    },
-    sunset: {
-        primary: '#f43f5e', // rose-500
-        'primary-foreground': '#ffffff',
-        secondary: '#881337', // rose-900
-        'secondary-foreground': '#ffe4e6', // rose-100
-        background: '#4c0519', // rose-950
-        foreground: '#fff1f2',
-        card: '#be123c', // rose-700
-        'card-foreground': '#fff1f2',
-        border: '#9f1239',
-        input: '#9f1239',
-        ring: '#f43f5e',
     }
 };

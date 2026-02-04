@@ -87,6 +87,21 @@ export const restorePrompt = async (id: string) => {
     return data;
 };
 
+export interface PaginationMeta {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+}
+
+export const searchPrompts = async (params: any) => {
+    const { data } = await api.get('/prompts/search', { params });
+    // Handle both cases where data might be wrapped in { data: [], pagination: {} } or direct
+    return data;
+};
+
 export const promptService = {
     getPrompts,
     getPromptById,
@@ -95,5 +110,8 @@ export const promptService = {
     deletePrompt,
     restorePrompt,
     searchPromptsAdvanced,
-    getSearchSuggestions
+    getSearchSuggestions,
+    // Aliases/Missing methods
+    searchPrompts,
+    getSuggestions: getSearchSuggestions
 };

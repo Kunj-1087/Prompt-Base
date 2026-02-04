@@ -1,11 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Iceland&display=swap');
 @import "tailwindcss";
 
-@layer base {
-  body {
-    @apply bg-slate-50 text-slate-900 transition-colors duration-300;
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from { height: 0 }
+    to { height: var(--radix-accordion-content-height) }
   }
-  .dark body {
-    @apply bg-slate-950 text-slate-50;
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height) }
+    to { height: 0 }
+  }
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+@layer base {
+  :root {
+    /* bg-main: #18181b */
+    --background: 240 6% 10%;
+    /* text-primary: #ffffff */
+    --foreground: 0 0% 100%;
+
+    /* bg-card: #27272b */
+    --card: 240 5% 16%;
+    /* text-primary: #ffffff */
+    --card-foreground: 0 0% 100%;
+ 
+    /* bg-card: #27272b */
+    --popover: 240 5% 16%;
+    --popover-foreground: 0 0% 100%;
+
+    /* button-primary: #f4f4f5 */
+    --primary: 240 5% 96%;
+    /* button-text: #18181b */
+    --primary-foreground: 240 6% 10%;
+
+    /* bg-secondary: #27272a */
+    --secondary: 240 4% 16%;
+    /* text-secondary: #dbdbdb */
+    --secondary-foreground: 0 0% 86%;
+
+    /* bg-secondary: #27272a */
+    --muted: 240 4% 16%;
+    /* text-muted: #a1a1aa */
+    --muted-foreground: 240 5% 65%;
+
+    /* accent-primary: #33E092 */
+    --accent: 153 73% 54%;
+    /* text-main: #18181b */
+    --accent-foreground: 240 6% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* border-default: #27272a */
+    --border: 240 4% 16%;
+    /* border-light: #3f3f46 - using input for lighter border */
+    --input: 240 5% 26%;
+    /* accent-primary: #33E092 */
+    --ring: 153 73% 54%;
+
+    --radius: 0.5rem;
+  }
+
+  /* Keep .dark same as root since it's a dark-only theme now */
+  .dark {
+    --background: 240 6% 10%;
+    --foreground: 0 0% 100%;
+
+    --card: 240 5% 16%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 240 5% 16%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 240 5% 96%;
+    --primary-foreground: 240 6% 10%;
+
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 0 0% 86%;
+
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
+
+    --accent: 153 73% 54%;
+    --accent-foreground: 240 6% 10%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 240 4% 16%;
+    --input: 240 5% 26%;
+    --ring: 153 73% 54%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Iceland', sans-serif;
   }
 }
 

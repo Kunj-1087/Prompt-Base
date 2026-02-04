@@ -105,7 +105,7 @@ class AnalyticsService {
    * Get user behavior funnel
    */
   async getFunnel(steps: string[], startDate: Date, endDate: Date): Promise<Array<{ step: string; count: number; dropoff: number }>> {
-    const results = [];
+    const results: Array<{ step: string; count: number; dropoff: number }> = [];
 
     for (let i = 0; i < steps.length; i++) {
       const count = await AnalyticsEvent.countDocuments({

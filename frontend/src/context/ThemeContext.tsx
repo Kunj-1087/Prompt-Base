@@ -5,67 +5,56 @@ interface ThemeContextType {
     theme: string;
     setTheme: (theme: string) => void;
     availableThemes: string[];
-    customColors?: Partial<ThemeColors>;
-    updateCustomColor: (key: keyof ThemeColors, value: string) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-    theme: 'dark',
+    theme: 'light',
     setTheme: () => {},
     availableThemes: [],
-    updateCustomColor: () => {}
 });
 
 export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [theme, setThemeState] = useState<string>(() => {
-        return localStorage.getItem('theme') || 'dark';
-    });
-    
-    // Allow custom overrides (advanced feature)
-    const [customColors, setCustomColors] = useState<Partial<ThemeColors>>(() => {
-        const saved = localStorage.getItem('custom_theme_colors');
-        return saved ? JSON.parse(saved) : {};
+        const saved = localStorage.getItem('theme');
+        // Default to 'light' if not set, or if set to an invalid value (e.g. from old version)
+        if (saved === 'dark') return 'dark';
+        return 'light';
     });
 
     const setTheme = (newTheme: string) => {
-        setThemeState(newTheme);
-        localStorage.setItem('theme', newTheme);
-    };
-
-    const updateCustomColor = (key: keyof ThemeColors, value: string) => {
-        const newColors = { ...customColors, [key]: value };
-        setCustomColors(newColors);
-        localStorage.setItem('custom_theme_colors', JSON.stringify(newColors));
+        // Enforce valid themes
+        const validTheme = newTheme === 'dark' ? 'dark' : 'light';
+        setThemeState(validTheme);
+        localStorage.setItem('theme', validTheme);
     };
 
     useEffect(() => {
         // Determine active dataset
-        const baseTheme: ThemeColors = themes[theme] || themes['dark'];
-        const activeTheme = { ...baseTheme, ...customColors };
-
+         // Default to light if theme key missing (robustness)
+        const baseTheme: ThemeColors = themes[theme] || themes['light'];
+        
         // Apply CSS variables
         const root = document.documentElement;
-        Object.entries(activeTheme).forEach(([key, value]) => {
+        Object.entries(baseTheme).forEach(([key, value]) => {
             if (value) root.style.setProperty(`--color-${key}`, value);
         });
 
-        if (theme === 'light') {
-            root.classList.remove('dark');
-        } else {
+        // Add/remove dark class for Tailwind
+        if (theme === 'dark') {
             root.classList.add('dark');
+        } else {
+            root.classList.remove('dark');
         }
 
-    }, [theme, customColors]);
+    }, [theme]);
 
     return (
         <ThemeContext.Provider value={{ 
             theme, 
             setTheme, 
             availableThemes: Object.keys(themes),
-            customColors,
-            updateCustomColor
         }}>
             {children}
         </ThemeContext.Provider>

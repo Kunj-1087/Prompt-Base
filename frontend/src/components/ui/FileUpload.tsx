@@ -2,7 +2,7 @@
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, X, File as FileIcon, Loader2 } from 'lucide-react';
-import { Button } from './Button';
+import { Button } from './button';
 import axios from 'axios';
 import api from '../../services/api';
 
