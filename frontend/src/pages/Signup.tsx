@@ -85,17 +85,17 @@ export const Signup = () => {
   if (isSuccess) {
     return (
       <div className="flex items-center justify-center min-h-[80vh] px-4">
-        <Card className="w-full max-w-md text-center p-8">
+        <Card className="w-full max-w-md text-center p-8 bg-[#f4f4f5] dark:bg-[#27272a] border border-zinc-200 dark:border-zinc-800 rounded-md">
           <div className="flex justify-center mb-4">
             <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center">
               <Check className="h-8 w-8 text-green-600" />
             </div>
           </div>
-          <h2 className="text-2xl font-bold mb-2">Registration Successful!</h2>
-          <p className="text-slate-600 mb-6">
+          <h2 className="text-2xl font-bold mb-2 text-[#18181b] dark:text-white">Registration Successful!</h2>
+          <p className="text-[#52525b] dark:text-[#a1a1aa] mb-6">
             We've sent a verification email to your inbox. Please check it to activate your account.
           </p>
-          <Button onClick={() => navigate('/login')}>
+          <Button onClick={() => navigate('/login')} className="bg-[#33E092] hover:bg-[#16a34a] text-[#18181b]">
             Go to Login
           </Button>
         </Card>
@@ -105,10 +105,10 @@ export const Signup = () => {
 
   return (
     <div className="flex items-center justify-center min-h-[80vh] px-4 py-8">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md bg-[#f4f4f5] dark:bg-[#27272a] border border-zinc-200 dark:border-zinc-800 rounded-md">
         <CardHeader>
-          <CardTitle className="text-center text-2xl">Create an Account</CardTitle>
-          <p className="text-center text-slate-500 text-sm">
+          <CardTitle className="text-center text-2xl text-[#18181b] dark:text-white">Create an Account</CardTitle>
+          <p className="text-center text-[#52525b] dark:text-[#a1a1aa] text-sm">
             Join Prompt-Base today
           </p>
         </CardHeader>
@@ -125,6 +125,7 @@ export const Signup = () => {
               label="Full Name"
               placeholder="John Doe"
               error={errors.name?.message}
+              className="bg-white dark:bg-[#18181b] border-[#d4d4d8] dark:border-[#3f3f46] text-[#18181b] dark:text-white placeholder:text-[#52525b] dark:placeholder:text-[#a1a1aa] focus:ring-0! focus:border-[#33E092]! transition-colors duration-200"
               {...register('name')}
             />
 
@@ -134,6 +135,7 @@ export const Signup = () => {
                 type="email"
                 placeholder="john@example.com"
                 error={errors.email?.message}
+                className="bg-white dark:bg-[#18181b] border-[#d4d4d8] dark:border-[#3f3f46] text-[#18181b] dark:text-white placeholder:text-[#52525b] dark:placeholder:text-[#a1a1aa] focus:ring-0! focus:border-[#33E092]! transition-colors duration-200"
                 {...register('email', {
                   onBlur: checkEmailAvailability
                 })}
@@ -153,6 +155,7 @@ export const Signup = () => {
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 error={errors.password?.message}
+                className="bg-white dark:bg-[#18181b] border-[#d4d4d8] dark:border-[#3f3f46] text-[#18181b] dark:text-white placeholder:text-[#52525b] dark:placeholder:text-[#a1a1aa] focus:ring-0! focus:border-[#33E092]! transition-colors duration-200"
                 {...register('password')}
               />
               <button
@@ -169,6 +172,7 @@ export const Signup = () => {
               type="password"
               placeholder="••••••••"
               error={errors.confirmPassword?.message}
+              className="bg-white dark:bg-[#18181b] border-[#d4d4d8] dark:border-[#3f3f46] text-[#18181b] dark:text-white placeholder:text-[#52525b] dark:placeholder:text-[#a1a1aa] focus:ring-0! focus:border-[#33E092]! transition-colors duration-200"
               {...register('confirmPassword')}
             />
 
@@ -176,16 +180,16 @@ export const Signup = () => {
               <input
                 type="checkbox"
                 id="terms"
-                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 accent-[#33E092]"
                 {...register('terms')}
               />
-              <label htmlFor="terms" className="text-sm text-slate-600">
+              <label htmlFor="terms" className="text-sm text-[#52525b] dark:text-[#a1a1aa]">
                 I agree to the{' '}
-                <Link to="/terms" className="text-indigo-600 hover:underline">
+                <Link to="/terms" className="text-[#33E092] hover:underline hover:text-[#16a34a]">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link to="/privacy" className="text-indigo-600 hover:underline">
+                <Link to="/privacy" className="text-[#33E092] hover:underline hover:text-[#16a34a]">
                   Privacy Policy
                 </Link>
               </label>
@@ -196,16 +200,16 @@ export const Signup = () => {
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-[#33E092] hover:bg-[#16a34a] text-[#18181b]"
               isLoading={isSubmitting}
               disabled={isSubmitting || isEmailAvailable === false}
             >
               Create Account
             </Button>
 
-            <p className="text-center text-sm text-slate-500 mt-4">
+            <p className="text-center text-sm text-[#52525b] dark:text-[#a1a1aa] mt-4">
               Already have an account?{' '}
-              <Link to="/login" className="text-indigo-600 font-medium hover:underline">
+              <Link to="/login" className="text-[#33E092] font-medium hover:underline hover:text-[#16a34a]">
                 Sign in
               </Link>
             </p>

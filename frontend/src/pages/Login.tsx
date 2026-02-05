@@ -73,12 +73,12 @@ export const Login = () => {
 
   return (
     <div className="flex items-center justify-center min-h-[80vh] px-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md bg-[#f4f4f5] dark:bg-[#27272a] border border-zinc-200 dark:border-zinc-800 rounded-md">
         <CardHeader>
-          <CardTitle className="text-center text-2xl">
+          <CardTitle className="text-center text-2xl text-[#18181b] dark:text-white">
               {showTwoFactor ? 'Two-Factor Authentication' : 'Welcome Back'}
           </CardTitle>
-          <p className="text-center text-slate-500 text-sm">
+          <p className="text-center text-[#52525b] dark:text-[#a1a1aa] text-sm">
             {showTwoFactor ? 'Enter the code from your app' : 'Sign in to your account'}
           </p>
         </CardHeader>
@@ -98,6 +98,7 @@ export const Login = () => {
                       type="email"
                       placeholder="john@example.com"
                       error={errors.email?.message}
+                      className="bg-white dark:bg-[#18181b] border-[#d4d4d8] dark:border-[#3f3f46] text-[#18181b] dark:text-white placeholder:text-[#52525b] dark:placeholder:text-[#a1a1aa] focus:ring-0! focus:border-[#33E092]! transition-colors duration-200"
                       {...register('email')}
                     />
 
@@ -107,6 +108,7 @@ export const Login = () => {
                         type={showPassword ? 'text' : 'password'}
                         placeholder="••••••••"
                         error={errors.password?.message}
+                        className="bg-white dark:bg-[#18181b] border-[#d4d4d8] dark:border-[#3f3f46] text-[#18181b] dark:text-white placeholder:text-[#52525b] dark:placeholder:text-[#a1a1aa] focus:ring-0! focus:border-[#33E092]! transition-colors duration-200"
                         {...register('password')}
                       />
                       <button
@@ -130,14 +132,14 @@ export const Login = () => {
             ) : (
                 <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
                     <div className="space-y-2">
-                        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-700">
+                        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-[#18181b] dark:text-white">
                             Authentication Code
                         </label>
                         <Input
                             value={twoFactorCode}
                             onChange={(e) => setTwoFactorCode(e.target.value)}
                             placeholder="000 000"
-                            className="text-center tracking-widest font-mono text-lg"
+                            className="text-center tracking-widest font-mono text-lg bg-white dark:bg-[#18181b] border-[#d4d4d8] dark:border-[#3f3f46] text-[#18181b] dark:text-white placeholder:text-[#52525b] dark:placeholder:text-[#a1a1aa] focus:ring-0! focus:border-[#33E092]! transition-colors duration-200"
                             autoFocus
                         />
                     </div>
@@ -146,7 +148,7 @@ export const Login = () => {
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-[#33E092] hover:bg-[#16a34a] text-[#18181b]"
               isLoading={isSubmitting}
               disabled={isSubmitting}
             >
@@ -154,9 +156,9 @@ export const Login = () => {
             </Button>
 
             {!showTwoFactor && (
-                <p className="text-center text-sm text-slate-500 mt-4">
+                <p className="text-center text-sm text-[#52525b] dark:text-[#a1a1aa] mt-4">
                   Don't have an account?{' '}
-                  <Link to="/signup" className="text-indigo-600 font-medium hover:underline">
+                  <Link to="/signup" className="text-[#33E092] font-medium hover:underline hover:text-[#16a34a]">
                     Sign up
                   </Link>
                 </p>
