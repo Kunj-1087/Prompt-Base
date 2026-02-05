@@ -1,3 +1,9 @@
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Loader2, Save } from 'lucide-react';
+import { Button } from '../ui/Button';
 // import { FileUpload } from '../ui/FileUpload';
 
 const promptSchema = z.object({
@@ -19,7 +25,7 @@ interface PromptFormProps {
 }
 
 export const PromptForm = ({ initialValues, onSubmit, isLoading, isEdit = false, onDirtyChange }: PromptFormProps) => {
-    const { register, handleSubmit, formState: { errors, isDirty }, reset, setValue, watch } = useForm<PromptFormValues>({
+    const { register, handleSubmit, formState: { errors, isDirty }, reset } = useForm<PromptFormValues>({
         resolver: zodResolver(promptSchema),
         defaultValues: {
             title: '',

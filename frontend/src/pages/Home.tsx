@@ -1,4 +1,4 @@
-import { Button } from "../components/ui/button";
+import { Button } from "../components/ui/Button";
 import { MainLayout } from "../components/layout/MainLayout";
 import { Link } from "react-router-dom";
 import { Sparkles, Zap, Shield } from "lucide-react";

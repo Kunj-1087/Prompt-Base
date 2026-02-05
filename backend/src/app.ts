@@ -2,10 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import mongoSanitize from 'express-mongo-sanitize';
+// import mongoSanitize from 'express-mongo-sanitize';
 // @ts-ignore
-import xss from 'xss-clean';
-import hpp from 'hpp';
+// import xss from 'xss-clean';
+// import hpp from 'hpp';
 import cookieParser from 'cookie-parser';
 import v1Router from './routes/v1';
 
@@ -36,13 +36,13 @@ app.use(cors({
 app.use(express.json({ limit: '10kb' }));
 
 // Data sanitization against NoSQL query injection
-app.use(mongoSanitize());
+// app.use(mongoSanitize());
 
 // Data sanitization against XSS
-app.use(xss());
+// app.use(xss());
 
 // Prevent parameter pollution
-app.use(hpp());
+// app.use(hpp());
 
 // Routes
 app.use('/api/v1', v1Router);

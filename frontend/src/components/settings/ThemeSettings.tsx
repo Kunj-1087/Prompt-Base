@@ -1,7 +1,5 @@
-import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { themes } from '../../config/themes';
-import { Button } from '../ui/button';
 import { Check } from 'lucide-react';
 
 export const ThemeSettings = () => {

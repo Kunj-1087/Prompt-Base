@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 export const HighlightText = ({ text, highlight }: { text: string; highlight: string }) => {
     if (!highlight || highlight.length < 2) return <>{text}</>;

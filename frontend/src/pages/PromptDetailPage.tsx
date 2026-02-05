@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { promptService, type IPrompt } from '../services/promptService';
-import { Button } from '../components/ui/button';
+import { Button } from '../components/ui/Button';
 import { DeleteConfirmModal } from '../components/ui/DeleteConfirmModal';
 import { ArrowLeft, Edit, Trash2, Calendar, Tag, AlertTriangle } from 'lucide-react';
 import { toast } from 'react-hot-toast';

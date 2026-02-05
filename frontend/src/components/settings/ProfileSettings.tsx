@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
+import { Input } from '../ui/input';
 import { User, Camera } from 'lucide-react';
 import api from '../../services/api';
 

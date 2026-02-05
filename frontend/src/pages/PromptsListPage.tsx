@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { promptService, type IPrompt, type PaginationMeta } from '../services/promptService';
 import { PromptCard } from '../components/prompts/PromptCard';
 import { Pagination } from '../components/ui/Pagination';
-import { Button } from '../components/ui/button';
+import { Button } from '../components/ui/Button';
 import { Plus, Search, RefreshCw, X, History, AlertCircle, SearchX, FilePlus } from 'lucide-react';
 import { useDebounce } from '../hooks/useDebounce';
 import { HighlightText } from '../components/ui/HighlightText';

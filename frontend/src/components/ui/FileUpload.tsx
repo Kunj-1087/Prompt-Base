@@ -1,9 +1,7 @@
 
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, X, File as FileIcon, Loader2 } from 'lucide-react';
-import { Button } from './button';
-import axios from 'axios';
+import { Upload, X, Loader2 } from 'lucide-react';
 import api from '../../services/api';
 
 interface FileUploadProps {

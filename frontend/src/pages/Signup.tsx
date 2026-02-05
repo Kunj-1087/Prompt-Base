@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Eye, EyeOff, Check, X } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import axios from 'axios';
@@ -125,7 +125,7 @@ export const Signup = () => {
               label="Full Name"
               placeholder="John Doe"
               error={errors.name?.message}
-              className="bg-white dark:bg-[#18181b] border-[#d4d4d8] dark:border-[#3f3f46] text-[#18181b] dark:text-white placeholder:text-[#52525b] dark:placeholder:text-[#a1a1aa] focus:ring-0! focus:border-[#33E092]! transition-colors duration-200"
+              className="rounded-lg px-4 py-3 border focus:outline-none focus:ring-1 transition-colors duration-200 bg-white border-[#d4d4d8] text-[#18181b] placeholder:text-[#71717a] placeholder:opacity-100 dark:bg-[#18181b] dark:border-[#3f3f46] dark:text-white dark:placeholder:text-[#a1a1aa] dark:placeholder:opacity-100 focus:border-[#33E092] focus:ring-[#33E092]"
               {...register('name')}
             />
 
@@ -135,7 +135,7 @@ export const Signup = () => {
                 type="email"
                 placeholder="john@example.com"
                 error={errors.email?.message}
-                className="bg-white dark:bg-[#18181b] border-[#d4d4d8] dark:border-[#3f3f46] text-[#18181b] dark:text-white placeholder:text-[#52525b] dark:placeholder:text-[#a1a1aa] focus:ring-0! focus:border-[#33E092]! transition-colors duration-200"
+                className="rounded-lg px-4 py-3 border focus:outline-none focus:ring-1 transition-colors duration-200 bg-white border-[#d4d4d8] text-[#18181b] placeholder:text-[#71717a] placeholder:opacity-100 dark:bg-[#18181b] dark:border-[#3f3f46] dark:text-white dark:placeholder:text-[#a1a1aa] dark:placeholder:opacity-100 focus:border-[#33E092] focus:ring-[#33E092]"
                 {...register('email', {
                   onBlur: checkEmailAvailability
                 })}
@@ -155,12 +155,12 @@ export const Signup = () => {
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 error={errors.password?.message}
-                className="bg-white dark:bg-[#18181b] border-[#d4d4d8] dark:border-[#3f3f46] text-[#18181b] dark:text-white placeholder:text-[#52525b] dark:placeholder:text-[#a1a1aa] focus:ring-0! focus:border-[#33E092]! transition-colors duration-200"
+                className="rounded-lg px-4 py-3 border focus:outline-none focus:ring-1 transition-colors duration-200 bg-white border-[#d4d4d8] text-[#18181b] placeholder:text-[#71717a] placeholder:opacity-100 dark:bg-[#18181b] dark:border-[#3f3f46] dark:text-white dark:placeholder:text-[#a1a1aa] dark:placeholder:opacity-100 focus:border-[#33E092] focus:ring-[#33E092]"
                 {...register('password')}
               />
               <button
                 type="button"
-                className="absolute right-3 top-[34px] text-slate-400 hover:text-slate-600"
+                className="absolute right-3 top-[34px] text-[#52525b] dark:text-[#a1a1aa] hover:text-[#18181b] dark:hover:text-white"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -172,7 +172,7 @@ export const Signup = () => {
               type="password"
               placeholder="••••••••"
               error={errors.confirmPassword?.message}
-              className="bg-white dark:bg-[#18181b] border-[#d4d4d8] dark:border-[#3f3f46] text-[#18181b] dark:text-white placeholder:text-[#52525b] dark:placeholder:text-[#a1a1aa] focus:ring-0! focus:border-[#33E092]! transition-colors duration-200"
+              className="rounded-lg px-4 py-3 border focus:outline-none focus:ring-1 transition-colors duration-200 bg-white border-[#d4d4d8] text-[#18181b] placeholder:text-[#71717a] placeholder:opacity-100 dark:bg-[#18181b] dark:border-[#3f3f46] dark:text-white dark:placeholder:text-[#a1a1aa] dark:placeholder:opacity-100 focus:border-[#33E092] focus:ring-[#33E092]"
               {...register('confirmPassword')}
             />
 

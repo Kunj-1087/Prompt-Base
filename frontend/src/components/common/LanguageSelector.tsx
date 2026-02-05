@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 import {
@@ -7,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
-import { Button } from '../ui/button';
+import { Button } from '../ui/Button';
 
 export const LanguageSelector = () => {
   const { t, i18n } = useTranslation();

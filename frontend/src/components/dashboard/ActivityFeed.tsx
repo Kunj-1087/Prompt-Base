@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { activityService, type Activity } from '../../services/activityService';
 import { ActivityItem } from './ActivityItem';
 import { useSocket } from '../../context/SocketContext';
-import { Button } from '../ui/button';
+import { Button } from '../ui/Button';
 
 interface ActivityFeedProps {
     initialActivities?: Activity[];

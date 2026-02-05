@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Loader2, Save, X } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
+import { Input } from '../ui/input';
 import type { IUserProfile, IUser } from '../../types/user';
 
 // Validation Schema

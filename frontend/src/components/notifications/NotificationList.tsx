@@ -1,6 +1,6 @@
 import { Bell } from 'lucide-react';
 import { EmptyState } from '../common/EmptyState';
-import { Button } from '../ui/button';
+import { Button } from '../ui/Button';
 
 // Mock Notification Interface
 interface Notification {

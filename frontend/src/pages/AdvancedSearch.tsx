@@ -4,7 +4,7 @@ import { searchPromptsAdvanced, type PromptFilters, type SearchResults } from '.
 import { SearchInput } from '../components/search/SearchInput';
 import { FilterPanel } from '../components/search/FilterPanel';
 import { PromptCard } from '../components/prompts/PromptCard';
-import { Button } from '../components/ui/button'; // Changed to lowercase
+import { Button } from '../components/ui/Button'; // Changed to lowercase
 
 export const AdvancedSearch: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();

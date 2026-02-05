@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { settingsService } from '../../services/settingsService';
 import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
+import { Input } from '../ui/input';
 import { Lock, Smartphone, Globe } from 'lucide-react';
 
 const passwordSchema = z.object({

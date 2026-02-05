@@ -1,6 +1,6 @@
 
 import { Loader2 } from "lucide-react"
-import { Button, ButtonProps } from "@/components/ui/button"
+import { Button, type ButtonProps } from "@/components/ui/Button"
 
 interface LoadingButtonProps extends ButtonProps {
   isLoading?: boolean;

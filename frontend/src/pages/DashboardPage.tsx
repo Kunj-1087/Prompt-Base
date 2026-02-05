@@ -7,7 +7,7 @@ import { authService } from '../services/authService';
 import { StatCard } from '../components/dashboard/StatCard';
 import { ActivityFeed } from '../components/dashboard/ActivityFeed';
 import { Layers, Zap, Clock, TrendingUp, Plus, AlertTriangle } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { Button } from '../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 
 export const DashboardPage = () => {

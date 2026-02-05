@@ -13,7 +13,7 @@ const getEnv = (key: string, defaultValue?: string): string => {
 };
 
 const config: Config = {
-  API_URL: getEnv('VITE_API_URL', 'http://localhost:5000/api'),
+  API_URL: getEnv('VITE_API_URL', 'http://localhost:5000/api/v1'),
   APP_NAME: getEnv('VITE_APP_NAME', 'Prompt-Base'),
   ENVIRONMENT: getEnv('VITE_ENVIRONMENT', 'development'),
 };

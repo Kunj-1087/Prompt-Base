@@ -1,7 +1,7 @@
 import React from 'react';
 import type { PromptFilters } from '../../services/promptService';
 // import { Checkbox } from '../ui/Checkbox'; // Assuming we have these or use native
-// import { Label } from '../ui/Label';
+// import { Label } from '../ui/label';
 
 interface FilterPanelProps {
   filters: PromptFilters;
